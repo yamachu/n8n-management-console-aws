@@ -1,0 +1,16 @@
+services:
+  moto:
+    image: motoserver/moto:latest
+    environment:
+      - MOTO_PORT=5001
+    ports:
+      - "5001:5001" # 5000 is used by AirPlay...
+
+  pool-initializer:
+    build:
+      context: ./tools/pool-initializer
+    environment:
+      - MOTO_ENDPOINT=http://moto:5001
+    depends_on:
+      - moto
+    entrypoint: ["/bin/sh", "-c", "sleep 3 && pnpm start"]

@@ -1,0 +1,19 @@
+{
+  "name": "pool-initializer",
+  "main": "src/index.ts",
+  "type": "module",
+  "private": true,
+  "author": "yamachu",
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/index.ts"
+  },
+  "packageManager": "pnpm@10.29.3",
+  "devDependencies": {
+    "@types/node": "24.10.13",
+    "typescript": "5.9.3"
+  },
+  "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "3.989.0"
+  }
+}
