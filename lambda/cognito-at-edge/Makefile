@@ -14,6 +14,7 @@ dist/index.mjs: .env index.mts .FORCE
 		--define:process.env.USER_POOL_ID=$(USER_POOL_ID) \
 		--define:process.env.USER_POOL_APP_ID=$(USER_POOL_APP_ID) \
 		--define:process.env.USER_POOL_DOMAIN=$(USER_POOL_DOMAIN) \
+		--define:process.env.TARGET_LAMBDA_REGION=$(TARGET_LAMBDA_REGION) \
 		--outfile=dist/index.mjs
 
 lambda.zip: dist/index.mjs package.json
