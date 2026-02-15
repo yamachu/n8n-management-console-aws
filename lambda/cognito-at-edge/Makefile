@@ -6,8 +6,8 @@ build: lambda.zip
 .FORCE:
 
 # if replace on command-line: make build AWS_REGION="\'ap-northeast-1\'"
-dist/index.mjs: .env index.mjs .FORCE
-	@pnpm exec esbuild --bundle index.mjs --platform=node --target=node24 --format=esm \
+dist/index.mjs: .env index.mts .FORCE
+	@pnpm exec esbuild --bundle index.mts --platform=node --target=node24 --format=esm \
 		--main-fields=module,main \
 		--banner:js="import { fileURLToPath } from 'url'; import { createRequire } from 'module'; const require = createRequire(import.meta.url); const __filename = fileURLToPath(import.meta.url); const __dirname = require('path').dirname(__filename);" \
 		--define:process.env.AWS_REGION=$(AWS_REGION) \
