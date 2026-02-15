@@ -11,6 +11,7 @@
     "fmt:check": "oxfmt --check"
   },
   "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "3.990.0",
     "@hono/node-server": "1.19.9",
     "hono": "4.11.9",
     "honox": "0.1.53"
@@ -19,6 +20,7 @@
     "@hono/vite-build": "1.9.3",
     "@hono/vite-dev-server": "0.25.0",
     "@tailwindcss/vite": "4.1.18",
+    "@types/node": "24.10.13",
     "oxfmt": "^0.32.0",
     "oxlint": "^1.47.0",
     "tailwindcss": "4.1.18",

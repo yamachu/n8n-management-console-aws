@@ -2,7 +2,9 @@ import type {} from "hono";
 
 declare module "hono" {
   interface Env {
-    Variables: {};
+    Variables: {
+      USER_EMAIL: string;
+    };
     Bindings: {};
   }
 }

@@ -9,6 +9,7 @@ export default defineConfig({
     honox({
       devServer: { adapter },
       client: { input: ["/app/client.ts", "/app/style.css"] },
+      entry: "/app/server.tsx", // TODO: localでの開発は /app/server.local.tsx に向けるようにする
     }),
     tailwindcss(),
     build(),
