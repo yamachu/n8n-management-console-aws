@@ -13,3 +13,5 @@ export const createUserRepository = (impl?: UserRepository): UserRepository => {
     },
   };
 };
+
+export type { UserRepository };
