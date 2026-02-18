@@ -1,5 +1,10 @@
+const userIdSymbol = Symbol();
+
+export type UserId = string & { [userIdSymbol]: never }; // UUIDv4
+export const toUserId = (id: string): UserId => id as UserId;
+
 export interface User {
-  id: string; // UUIDv4
+  id: UserId;
   email: string;
   firstName: string;
   lastName: string;

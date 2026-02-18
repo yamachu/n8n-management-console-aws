@@ -1,3 +1,4 @@
+import { toUserId } from "../../domains/User";
 import type { UserQueryRepository } from "./types";
 
 type UserFromAPI = {
@@ -21,7 +22,7 @@ export const createClient = (): UserQueryRepository => {
   return {
     fetchUsers: async () => {
       return (await fetchUsersRecursively()).map((user) => ({
-        id: user.id,
+        id: toUserId(user.id),
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
@@ -34,7 +35,7 @@ export const createClient = (): UserQueryRepository => {
         return null;
       }
       return {
-        id: found.id,
+        id: toUserId(found.id),
         email: found.email,
         firstName: found.firstName,
         lastName: found.lastName,
