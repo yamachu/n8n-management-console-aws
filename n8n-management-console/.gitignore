@@ -22,6 +22,7 @@ node_modules/
 .dev.vars
 !.env.*.template
 .env.*.local
+env.*.local.js
 
 # logs
 logs/
