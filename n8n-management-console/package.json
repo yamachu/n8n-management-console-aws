@@ -14,7 +14,8 @@
     "@aws-sdk/client-cognito-identity-provider": "3.990.0",
     "@hono/node-server": "1.19.9",
     "hono": "4.11.9",
-    "honox": "0.1.53"
+    "honox": "0.1.53",
+    "nanoid": "5.1.6"
   },
   "devDependencies": {
     "@hono/vite-build": "1.9.3",
