@@ -1,6 +1,6 @@
 import type {} from "hono";
 import type { User } from "./domains/User";
-import type { UserRepository } from "./infrastructures/userRepository";
+import type { UserQueryRepository } from "./infrastructures/userQueryRepository";
 
 declare module "hono" {
   interface Env {
@@ -8,7 +8,7 @@ declare module "hono" {
       USER_EMAIL: string;
       CURRENT_USER: User;
 
-      userRepository: UserRepository;
+      userQueryRepository: UserQueryRepository;
     };
     Bindings: {};
   }

@@ -3,25 +3,28 @@ import { showRoutes } from "hono/dev";
 import { createApp } from "honox/server";
 
 import { ForbiddenError, UnauthorizedError } from "./exceptions";
-import { createUserRepository } from "./infrastructures/userRepository";
+import { createUserQueryRepository } from "./infrastructures/userQueryRepository";
 import { requireAccount } from "./middlewares/account";
 import { requireAuth } from "./middlewares/auth/cognito";
 
 export const createComposeMiddlewareApp = (args?: {
   authArgs?: Parameters<typeof requireAuth>;
-  userRepositoryImplArgs?: Parameters<typeof createUserRepository>;
+  userRepositoryImplArgs?: Parameters<typeof createUserQueryRepository>;
 }) => {
   return new Hono<Env>()
     .use("*", async (c, next) => {
       c.set(
-        "userRepository",
-        createUserRepository(...(args?.userRepositoryImplArgs || [])),
+        "userQueryRepository",
+        createUserQueryRepository(...(args?.userRepositoryImplArgs || [])),
       );
       await next();
     })
     .use("*", requireAuth(...(args?.authArgs || [undefined, undefined])))
     .use("*", (c, next) =>
-      requireAccount(c.get("userRepository"), c.get("USER_EMAIL"))(c, next),
+      requireAccount(c.get("userQueryRepository"), c.get("USER_EMAIL"))(
+        c,
+        next,
+      ),
     )
     .onError((err, c) => {
       if (err instanceof UnauthorizedError) {

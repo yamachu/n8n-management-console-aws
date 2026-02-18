@@ -1,7 +1,9 @@
 import { createClient } from "./client";
-import type { UserRepository } from "./types";
+import type { UserQueryRepository } from "./types";
 
-export const createUserRepository = (impl?: UserRepository): UserRepository => {
+export const createUserQueryRepository = (
+  impl?: UserQueryRepository,
+): UserQueryRepository => {
   const r = impl || createClient();
 
   return {
@@ -14,4 +16,4 @@ export const createUserRepository = (impl?: UserRepository): UserRepository => {
   };
 };
 
-export type { UserRepository };
+export type { UserQueryRepository };

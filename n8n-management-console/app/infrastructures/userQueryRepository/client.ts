@@ -1,4 +1,4 @@
-import type { UserRepository } from "./types";
+import type { UserQueryRepository } from "./types";
 
 type UserFromAPI = {
   id: string;
@@ -17,7 +17,7 @@ type UsersResponse = {
 const apiKey = import.meta.env.VITE_N8N_API_KEY;
 const baseEndpoint = import.meta.env.VITE_N8N_BASE_ENDPOINT;
 
-export const createClient = (): UserRepository => {
+export const createClient = (): UserQueryRepository => {
   return {
     fetchUsers: async () => {
       return (await fetchUsersRecursively()).map((user) => ({
@@ -41,7 +41,7 @@ export const createClient = (): UserRepository => {
         role: found.role,
       };
     },
-  } satisfies UserRepository;
+  } satisfies UserQueryRepository;
 };
 
 const fetchUsers = async (cursor?: string): Promise<UsersResponse> => {
