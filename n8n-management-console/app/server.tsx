@@ -96,6 +96,34 @@ export const createComposeMiddlewareApp = (args?: {
               "Content-Type": "application/problem+json",
             },
           );
+        })
+        .use("*", async (c, next) => {
+          c.setRenderer((content) => {
+            return c.html(
+              <html lang="ja">
+                <head>
+                  <meta charset="utf-8" />
+                  <meta
+                    name="viewport"
+                    content="width=device-width, initial-scale=1.0"
+                  />
+                  <link rel="icon" href="/favicon.ico" />
+                  <link href="/app/style.css" rel="stylesheet" />
+                </head>
+                <body>{content}</body>
+              </html>,
+            );
+          });
+          await next();
+        })
+        .get("/", (c) => {
+          const name = c.req.query("name") ?? "Hono";
+          return c.render(
+            <div class="py-8 text-center">
+              <title>{name}</title>
+              <h1 class="text-3xl font-bold">Hello, {name}!</h1>
+            </div>,
+          );
         }),
   });
 };

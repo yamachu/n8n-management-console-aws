@@ -96,6 +96,22 @@ const app = createComposeMiddlewareApp({
         401,
       );
     }
+  })
+  .get("/about", async (c) => {
+    return c.render(
+      <>
+        <title>About - n8n Management Console</title>
+        <div>
+          <h1>About Page</h1>
+          <p>This is the about page of the n8n Management Console.</p>
+        </div>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: 'console.log("This is about page.");',
+          }}
+        />
+      </>,
+    );
   });
 
 showRoutes(app);
