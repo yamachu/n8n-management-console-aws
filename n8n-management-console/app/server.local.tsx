@@ -35,7 +35,6 @@ const app = createComposeMiddlewareApp({
     },
   ],
 })
-  .createApp()
   .use(
     localAuthPath,
     async (
