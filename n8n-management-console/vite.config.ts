@@ -16,7 +16,7 @@ export default defineConfig(({ command }) => ({
     // TODO: Node.jsにするか、AWS Lambdaにするかは別の方法で切り替えられるようにする
     command === "build"
       ? build({
-          entry: "/app/server.tsx",
+          entry: "/app/server.ts",
         })
       : undefined,
   ],
