@@ -1,8 +1,8 @@
-import { type Context, type Env } from "hono";
+import { type Context } from "hono";
 import { setCookie } from "hono/cookie";
 import { showRoutes } from "hono/dev";
-import { createApp } from "honox/server";
 
+import { toUserId } from "./domains/User";
 import { localAuthClient } from "./middlewares/auth/cognito/client.local";
 import {
   COOKIE_MAX_AGE,
@@ -12,7 +12,7 @@ import { createComposeMiddlewareApp } from "./server";
 
 const localAuthPath = "/_testing/login" as const;
 
-const composeMiddlewareApp = createComposeMiddlewareApp({
+const app = createComposeMiddlewareApp({
   authArgs: [
     localAuthClient,
     (c) => {
@@ -20,14 +20,28 @@ const composeMiddlewareApp = createComposeMiddlewareApp({
       return !passthroughPaths.some((path) => c.req.path.startsWith(path));
     },
   ],
-});
-
-const app = createApp<Env>({
-  app: composeMiddlewareApp,
+  userRepositoryImplArgs: [
+    {
+      fetchUsers: async () => [],
+      fetchUserByEmail: async (email) => {
+        return {
+          id: toUserId("test-user-id"),
+          email,
+          firstName: "Test",
+          lastName: "User",
+          role: "global:owner",
+        };
+      },
+    },
+  ],
 })
+  .createApp()
   .use(
     localAuthPath,
-    async (c: Context<{ Variables: { authClient: typeof localAuthClient } }>, next) => {
+    async (
+      c: Context<{ Variables: { authClient: typeof localAuthClient } }>,
+      next,
+    ) => {
       c.set("authClient", localAuthClient);
       await next();
     },
@@ -48,7 +62,10 @@ const app = createApp<Env>({
       const password = body.get("password");
 
       if (!username || !password) {
-        return c.json({ error: "Bad Request", message: "usernameとpasswordが必要です" }, 400);
+        return c.json(
+          { error: "Bad Request", message: "usernameとpasswordが必要です" },
+          400,
+        );
       }
 
       const tokens = await c.var.authClient.authenticateUser(
@@ -73,7 +90,8 @@ const app = createApp<Env>({
       return c.json(
         {
           error: "Authentication Failed",
-          message: "認証に失敗しました。ユーザー名とパスワードを確認してください。",
+          message:
+            "認証に失敗しました。ユーザー名とパスワードを確認してください。",
         },
         401,
       );
