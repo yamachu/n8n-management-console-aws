@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "NODE_OPTIONS='--import ./env.development.js --import ./env.development.local.js' vite",
-    "build": "vite build --mode client && vite build",
+    "build": "vite build",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "fmt": "oxfmt",
@@ -14,7 +14,6 @@
     "@aws-sdk/client-cognito-identity-provider": "3.990.0",
     "@hono/node-server": "1.19.9",
     "hono": "4.11.9",
-    "honox": "0.1.53",
     "nanoid": "5.1.6"
   },
   "devDependencies": {
