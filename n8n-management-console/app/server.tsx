@@ -1,7 +1,10 @@
 import { Hono, type Env } from "hono";
+import { env } from "hono/adapter";
 import { showRoutes } from "hono/dev";
 import { createApp } from "honox/server";
 
+import type { RuntimeEnv } from "../env";
+import { stringIsNullOrEmpty } from "./domains/utils";
 import { ForbiddenError, UnauthorizedError } from "./exceptions";
 import { createUserQueryRepository } from "./infrastructures/userQueryRepository";
 import { requireAccount } from "./middlewares/account";
@@ -13,10 +16,32 @@ export const createComposeMiddlewareApp = (args?: {
 }) => {
   return new Hono<Env>()
     .use("*", async (c, next) => {
-      c.set(
-        "userQueryRepository",
-        createUserQueryRepository(...(args?.userRepositoryImplArgs || [])),
-      );
+      if (!args?.userRepositoryImplArgs) {
+        const { N8N_API_KEY, N8N_BASE_ENDPOINT } = env<RuntimeEnv>(c);
+        if (
+          stringIsNullOrEmpty(N8N_API_KEY) ||
+          stringIsNullOrEmpty(N8N_BASE_ENDPOINT)
+        ) {
+          throw new Error(
+            "N8N_API_KEY and N8N_BASE_ENDPOINT must be provided in environment variables when userRepositoryImplArgs is not provided",
+          );
+        }
+        const { createClient } =
+          await import("./infrastructures/userQueryRepository/client");
+
+        c.set(
+          "userQueryRepository",
+          createUserQueryRepository(
+            createClient(N8N_BASE_ENDPOINT, N8N_API_KEY),
+          ),
+        );
+      } else {
+        c.set(
+          "userQueryRepository",
+          createUserQueryRepository(...args.userRepositoryImplArgs),
+        );
+      }
+
       await next();
     })
     .use("*", requireAuth(...(args?.authArgs || [undefined, undefined])))

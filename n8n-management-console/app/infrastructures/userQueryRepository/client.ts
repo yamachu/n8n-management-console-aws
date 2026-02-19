@@ -15,13 +15,23 @@ type UsersResponse = {
   nextCursor: string | null;
 };
 
-const apiKey = import.meta.env.VITE_N8N_API_KEY;
-const baseEndpoint = import.meta.env.VITE_N8N_BASE_ENDPOINT;
+type FetchParams = {
+  endpoint: string;
+  apiKey: string;
+};
 
-export const createClient = (): UserQueryRepository => {
+export const createClient = (
+  endpoint: string,
+  apiKey: string,
+): UserQueryRepository => {
+  const fetchParams: FetchParams = {
+    endpoint,
+    apiKey,
+  };
+
   return {
     fetchUsers: async () => {
-      return (await fetchUsersRecursively()).map((user) => ({
+      return (await fetchUsersRecursively(fetchParams)).map((user) => ({
         id: toUserId(user.id),
         email: user.email,
         firstName: user.firstName,
@@ -30,7 +40,7 @@ export const createClient = (): UserQueryRepository => {
       }));
     },
     fetchUserByEmail: async (email: string) => {
-      const found = await fetchUserByEmailRecursively(email);
+      const found = await fetchUserByEmailRecursively(fetchParams, email);
       if (!found) {
         return null;
       }
@@ -45,8 +55,11 @@ export const createClient = (): UserQueryRepository => {
   } satisfies UserQueryRepository;
 };
 
-const fetchUsers = async (cursor?: string): Promise<UsersResponse> => {
-  const url = new URL("/api/v1/users", baseEndpoint);
+const fetchUsers = async (
+  fetchParams: FetchParams,
+  cursor?: string,
+): Promise<UsersResponse> => {
+  const url = new URL("/api/v1/users", fetchParams.endpoint);
   url.searchParams.append("limit", "100");
   url.searchParams.append("includeRole", "true");
   if (cursor) {
@@ -55,7 +68,7 @@ const fetchUsers = async (cursor?: string): Promise<UsersResponse> => {
 
   const res = await fetch(url, {
     headers: {
-      "X-N8N-API-KEY": apiKey,
+      "X-N8N-API-KEY": fetchParams.apiKey,
     },
   });
 
@@ -68,28 +81,30 @@ const fetchUsers = async (cursor?: string): Promise<UsersResponse> => {
 };
 
 const fetchUsersRecursively = async (
+  fetchParams: FetchParams,
   cursor?: string,
   acc: UserFromAPI[] = [],
 ): Promise<UserFromAPI[]> => {
-  const { data, nextCursor } = await fetchUsers(cursor);
+  const { data, nextCursor } = await fetchUsers(fetchParams, cursor);
   const newAcc = [...acc, ...data];
   if (nextCursor) {
-    return fetchUsersRecursively(nextCursor, newAcc);
+    return fetchUsersRecursively(fetchParams, nextCursor, newAcc);
   }
   return newAcc;
 };
 
 const fetchUserByEmailRecursively = async (
+  fetchParams: FetchParams,
   email: string,
   cursor?: string,
 ): Promise<UserFromAPI | null> => {
-  const { data, nextCursor } = await fetchUsers(cursor);
+  const { data, nextCursor } = await fetchUsers(fetchParams, cursor);
   const foundUser = data.find((user) => user.email === email);
   if (foundUser) {
     return foundUser;
   }
   if (nextCursor) {
-    return fetchUserByEmailRecursively(email, nextCursor);
+    return fetchUserByEmailRecursively(fetchParams, email, nextCursor);
   }
   return null;
 };

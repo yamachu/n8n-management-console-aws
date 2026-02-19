@@ -1,17 +1,14 @@
-import { createClient } from "./client";
 import type { UserQueryRepository } from "./types";
 
 export const createUserQueryRepository = (
-  impl?: UserQueryRepository,
+  impl: UserQueryRepository,
 ): UserQueryRepository => {
-  const r = impl || createClient();
-
   return {
     fetchUsers: async () => {
-      return r.fetchUsers();
+      return impl.fetchUsers();
     },
     fetchUserByEmail: async (email: string) => {
-      return r.fetchUserByEmail(email);
+      return impl.fetchUserByEmail(email);
     },
   };
 };
