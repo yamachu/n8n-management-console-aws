@@ -1,8 +1,7 @@
-import type { Env } from "hono";
 import { createMiddleware } from "hono/factory";
 
 export const htmlRenderer = () =>
-  createMiddleware<Env>(async (c, next) => {
+  createMiddleware(async (c, next) => {
     c.setRenderer((content) => {
       return c.html(
         <html lang="ja">
