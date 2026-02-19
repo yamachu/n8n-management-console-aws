@@ -9,6 +9,7 @@ export default factory.createHandlers((c) => {
     <div class="py-8 text-center">
       <title>{name}</title>
       <h1 class="text-3xl font-bold">Hello, {name}!</h1>
+      {/* TODO: LitやSvelteとかでWeb Components化するといいかな */}
     </div>,
   );
 });
