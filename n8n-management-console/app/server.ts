@@ -6,17 +6,24 @@ import { logger } from "hono/logger";
 import type { RuntimeEnv } from "../env";
 import { stringIsNullOrEmpty } from "./domains/utils";
 import { ForbiddenError, UnauthorizedError } from "./exceptions";
+import { createCredentialQueryRepository } from "./infrastructures/credentialQueryRepository";
 import { createUserQueryRepository } from "./infrastructures/userQueryRepository";
 import { requireAccount } from "./middlewares/account";
 import { requireAuth } from "./middlewares/auth/cognito";
 import { htmlRenderer } from "./middlewares/renderer";
-import type { ProvidesMiddleware } from "./types/middleware";
+import type {
+  ProvidesMiddleware,
+  RequiresMiddleware,
+} from "./types/middleware";
 
 import rootIndexGetHandler from "./routes/index";
 
 export const createComposeMiddlewareApp = (args?: {
   authArgs?: Parameters<typeof requireAuth>;
   userRepositoryImplArgs?: Parameters<typeof createUserQueryRepository>;
+  credentialRepositoryImplArgs?: Parameters<
+    typeof createCredentialQueryRepository
+  >;
 }) =>
   new Hono()
     .use(logger())
@@ -57,6 +64,72 @@ export const createComposeMiddlewareApp = (args?: {
     )
     .use("*", requireAuth(...(args?.authArgs || [undefined, undefined])))
     .use("*", requireAccount())
+    .use(
+      "*",
+      async (c: Context<ProvidesMiddleware<Env, "n8nBackendDB">>, next) => {
+        if (!args?.credentialRepositoryImplArgs?.[0]) {
+          const { N8N_BACKEND_DB_TYPE, N8N_BACKEND_DB_CONNECTION_STRING } =
+            env<RuntimeEnv>(c);
+
+          if (N8N_BACKEND_DB_TYPE === "postgresql") {
+            const { default: pg } = await import("postgres");
+
+            c.set("n8nBackendDB", {
+              type: "postgresql",
+              client: pg(N8N_BACKEND_DB_CONNECTION_STRING),
+            });
+          } else {
+            throw new Error(
+              `Unsupported N8N_BACKEND_DB_TYPE: ${N8N_BACKEND_DB_TYPE}`,
+            );
+          }
+        }
+
+        await next();
+      },
+    )
+    .use(
+      "*",
+      async (
+        c: Context<
+          RequiresMiddleware<Env, "n8nBackendDB" | "CURRENT_USER"> &
+            ProvidesMiddleware<Env, "credentialQueryRepository">
+        >,
+        next,
+      ) => {
+        if (!args?.credentialRepositoryImplArgs?.[0]) {
+          const { N8N_BACKEND_DB_TYPE } = env<RuntimeEnv>(c);
+          if (N8N_BACKEND_DB_TYPE === "postgresql") {
+            const { createClient } =
+              await import("./infrastructures/credentialQueryRepository/client.postgresql");
+            const n8nBackendDB = c.get("n8nBackendDB");
+            if (n8nBackendDB.type !== "postgresql") {
+              throw new Error(
+                `Expected n8nBackendDB type to be postgresql, but got ${n8nBackendDB.type}`,
+              );
+            }
+
+            c.set(
+              "credentialQueryRepository",
+              createCredentialQueryRepository(
+                createClient(n8nBackendDB),
+                c.get("CURRENT_USER"),
+              ),
+            );
+          }
+        } else {
+          c.set(
+            "credentialQueryRepository",
+            createCredentialQueryRepository(
+              args.credentialRepositoryImplArgs[0],
+              args.credentialRepositoryImplArgs[1] ?? c.get("CURRENT_USER"),
+            ),
+          );
+        }
+
+        await next();
+      },
+    )
     .onError((err, c) => {
       if (err instanceof UnauthorizedError) {
         return c.newResponse(

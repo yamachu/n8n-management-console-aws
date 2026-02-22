@@ -25,7 +25,9 @@ const app = createComposeMiddlewareApp({
       fetchUsers: async () => [],
       fetchUserByEmail: async (email) => {
         return {
-          id: toUserId("test-user-id"),
+          id: toUserId(
+            "6c151317-c84b-41e9-8ddf-12b2689cdb3a" /** Random uuid v4 formatted value */,
+          ),
           email,
           firstName: "Test",
           lastName: "User",
