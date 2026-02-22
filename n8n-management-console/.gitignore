@@ -23,6 +23,7 @@ node_modules/
 !.env.*.template
 .env.*.local
 env.*.local.js
+.env.eslint.mjs
 
 # logs
 logs/
