@@ -1,6 +1,7 @@
 import { Hono, type Context, type Env } from "hono";
 import { env } from "hono/adapter";
 import { showRoutes } from "hono/dev";
+import { logger } from "hono/logger";
 
 import type { RuntimeEnv } from "../env";
 import { stringIsNullOrEmpty } from "./domains/utils";
@@ -18,6 +19,7 @@ export const createComposeMiddlewareApp = (args?: {
   userRepositoryImplArgs?: Parameters<typeof createUserQueryRepository>;
 }) =>
   new Hono()
+    .use(logger())
     .use(
       "*",
       async (
