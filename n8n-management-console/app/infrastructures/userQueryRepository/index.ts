@@ -1,4 +1,5 @@
-import type { UserQueryRepository } from "./types";
+import { toUserId } from "../../domains/User";
+import type { PlainUserQueryRepository, UserQueryRepository } from "./types";
 
 const userQueryRepositoryImplSymbol = Symbol("UserQueryRepositoryImpl");
 type UserQueryRepositoryImpl = UserQueryRepository & {
@@ -6,14 +7,27 @@ type UserQueryRepositoryImpl = UserQueryRepository & {
 };
 
 export const createUserQueryRepository = (
-  impl: UserQueryRepository,
+  impl: PlainUserQueryRepository,
 ): UserQueryRepositoryImpl => {
   return {
     fetchUsers: async () => {
-      return impl.fetchUsers();
+      return impl.fetchUsers().then((users) => {
+        return users.map((user) => ({
+          ...user,
+          id: toUserId(user.id),
+        }));
+      });
     },
     fetchUserByEmail: async (email: string) => {
-      return impl.fetchUserByEmail(email);
+      return impl.fetchUserByEmail(email).then((user) => {
+        if (!user) {
+          return null;
+        }
+        return {
+          ...user,
+          id: toUserId(user.id),
+        };
+      });
     },
   } satisfies UserQueryRepository as UserQueryRepositoryImpl;
 };

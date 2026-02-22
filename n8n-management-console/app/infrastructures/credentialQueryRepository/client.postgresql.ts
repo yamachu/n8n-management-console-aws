@@ -1,7 +1,5 @@
 import type { BackendDB } from "../../domains/BackendDB";
-import { toCredentialId } from "../../domains/Credential";
-import { toUserId } from "../../domains/User";
-import type { CredentialQueryRepository } from "./types";
+import type { PlainCredentialQueryRepository } from "./types";
 
 type CredentialFromDB = {
   name: string;
@@ -19,7 +17,7 @@ type CredentialFromDB = {
 
 export const createClient = (
   dbClient: Extract<BackendDB, { type: "postgresql" }>,
-): CredentialQueryRepository => {
+): PlainCredentialQueryRepository => {
   const sql = dbClient.client;
 
   return {
@@ -35,8 +33,8 @@ export const createClient = (
 
       const result = (await query).map((row) => ({
         ...row,
-        userId: toUserId(row.userId),
-        id: toCredentialId(row.id),
+        userId: row.userId,
+        id: row.id,
       }));
       const grouped = new Map(
         Map.groupBy(result, (item) => item.userId)
@@ -65,7 +63,7 @@ export const createClient = (
 
       return (await query).map((row) => ({
         ...row,
-        id: toCredentialId(row.id),
+        id: row.id,
       }));
     },
   };

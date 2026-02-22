@@ -2,7 +2,6 @@ import { type Context } from "hono";
 import { setCookie } from "hono/cookie";
 import { showRoutes } from "hono/dev";
 
-import { toUserId } from "./domains/User";
 import { localAuthClient } from "./middlewares/auth/cognito/client.local";
 import {
   COOKIE_MAX_AGE,
@@ -25,9 +24,7 @@ const app = createComposeMiddlewareApp({
       fetchUsers: async () => [],
       fetchUserByEmail: async (email) => {
         return {
-          id: toUserId(
-            "6c151317-c84b-41e9-8ddf-12b2689cdb3a" /** Random uuid v4 formatted value */,
-          ),
+          id: "6c151317-c84b-41e9-8ddf-12b2689cdb3a" /** Random uuid v4 formatted value */,
           email,
           firstName: "Test",
           lastName: "User",
