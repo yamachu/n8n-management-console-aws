@@ -9,7 +9,9 @@
 	],
 	"settings": {
 		"files.associations": {
-			".env.*.mjs": "javascript"
+			".env.*.mjs": "javascript",
+			"*.mjs.template": "javascript",
+			"*.js.template": "javascript",
 		}
 	}
 }
