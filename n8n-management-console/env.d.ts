@@ -5,6 +5,9 @@ export type RuntimeEnv = {
 
   N8N_API_KEY: string;
   N8N_BASE_ENDPOINT: string;
+
+  N8N_BACKEND_DB_TYPE: "postgresql" | "none";
+  N8N_BACKEND_DB_CONNECTION_STRING: string;
 };
 
 declare global {
