@@ -7,5 +7,9 @@
 			"path": "n8n-management-console"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.associations": {
+			".env.*.mjs": "javascript"
+		}
+	}
 }
