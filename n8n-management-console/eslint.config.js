@@ -27,6 +27,17 @@ export default defineConfig(
           ...safeql.configs.connections({
             databaseUrl: safeQLDatabaseUrl,
             targets: [{ tag: "sql", transform: "{type}[]" }],
+            overrides: {
+              types: {
+                // createdAt, updatedAtなど
+                timestamptz: "string",
+                // userIdとか
+                uuid: {
+                  parameter: "string",
+                  return: "string",
+                },
+              },
+            },
           }),
         },
       ]
