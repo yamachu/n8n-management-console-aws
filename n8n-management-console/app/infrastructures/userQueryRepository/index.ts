@@ -1,8 +1,13 @@
 import type { UserQueryRepository } from "./types";
 
+const userQueryRepositoryImplSymbol = Symbol("UserQueryRepositoryImpl");
+type UserQueryRepositoryImpl = UserQueryRepository & {
+  [userQueryRepositoryImplSymbol]: never;
+};
+
 export const createUserQueryRepository = (
   impl: UserQueryRepository,
-): UserQueryRepository => {
+): UserQueryRepositoryImpl => {
   return {
     fetchUsers: async () => {
       return impl.fetchUsers();
@@ -10,7 +15,7 @@ export const createUserQueryRepository = (
     fetchUserByEmail: async (email: string) => {
       return impl.fetchUserByEmail(email);
     },
-  };
+  } satisfies UserQueryRepository as UserQueryRepositoryImpl;
 };
 
-export type { UserQueryRepository };
+export type { UserQueryRepositoryImpl as UserQueryRepository };
