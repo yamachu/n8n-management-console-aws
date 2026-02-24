@@ -1,7 +1,7 @@
 import { toUserId } from "../../domains/User";
 import type { PlainUserQueryRepository, UserQueryRepository } from "./types";
 
-const userQueryRepositoryImplSymbol = Symbol("UserQueryRepositoryImpl");
+declare const userQueryRepositoryImplSymbol: unique symbol;
 type UserQueryRepositoryImpl = UserQueryRepository & {
   [userQueryRepositoryImplSymbol]: never;
 };

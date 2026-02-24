@@ -1,4 +1,4 @@
-const userIdSymbol = Symbol();
+declare const userIdSymbol: unique symbol;
 
 export type UserId = string & { [userIdSymbol]: never }; // UUIDv4
 export const toUserId = (id: string): UserId => id as UserId;

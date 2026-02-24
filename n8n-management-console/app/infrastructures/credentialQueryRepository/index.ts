@@ -5,9 +5,7 @@ import type {
   PlainCredentialQueryRepository,
 } from "./types";
 
-const credentialQueryRepositoryImplSymbol = Symbol(
-  "CredentialQueryRepositoryImpl",
-);
+declare const credentialQueryRepositoryImplSymbol: unique symbol;
 type CredentialQueryRepositoryImpl = CredentialQueryRepository & {
   [credentialQueryRepositoryImplSymbol]: never;
 };

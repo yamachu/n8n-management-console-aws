@@ -1,8 +1,8 @@
 import type { Mutable } from "../types/utils";
 import { generateId } from "./nanoid";
 
-const credentialIdSymbol = Symbol();
-const clonableCredentialSymbol = Symbol();
+declare const credentialIdSymbol: unique symbol;
+declare const clonableCredentialSymbol: unique symbol;
 
 export type CredentialId = string & { [credentialIdSymbol]: never }; // nanoid
 export const toCredentialId = (id: string): CredentialId => id as CredentialId;
